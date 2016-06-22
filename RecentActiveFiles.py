@@ -17,15 +17,10 @@ class RecentActiveFilesCommand(sublime_plugin.WindowCommand):
         else:
             items = [[f.name(), f.path_from_project()] for f in File.all_recents]
             def on_done(index):
-                if index < 0:
-                    self.window.open_file(File.current_file.path)
-
-            def on_highlight(index):
                 if index >= 0:
-                    self.window.open_file(File.all_recents[index].path, sublime.TRANSIENT)
-                return True
+                    self.window.open_file(File.all_recents[0].path)
 
-            self.window.show_quick_panel(items, on_done, 0, -1, on_highlight)
+            self.window.show_quick_panel(items, on_done)
 
 class File(object):
     all_recents = []
@@ -51,4 +46,6 @@ class File(object):
         return os.path.basename(self.path)
 
     def path_from_project(self):
-        return self.path.replace(self.project_folder + '/', '', 1)
+        path_wo_project_folder =  self.path.replace(self.project_folder, '', 1)
+        path_from_project = path_wo_project_folder.replace(self.name(), '')
+        return path_from_project
